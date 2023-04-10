@@ -1,0 +1,20 @@
+{
+    "en": {
+        "windows_platform": "Usage on Windows platform.",
+        "linux_platform": "Usage on Linux platform.",
+        "user_not_premium": "User {username} is no longer a premium member.",
+        "user_is_premium": "User {username} is a premium member.",
+        "discord_notification": "<@{discord_id}>\n```{user_list}```",
+        "discord_notification_success": "Message sent successfully on Discord!",
+        "discord_notification_error": "Error sending message on Discord."
+    },
+    "fr": {
+        "windows_platform": "Utilisation sous Windows",
+        "linux_platform": "Utilisation sous linux",
+        "user_not_premium": "L'utilisateur {username} n'est plus premium.",
+        "user_is_premium": "L'utilisateur {username} est premium.",
+        "discord_notification": "<@{discord_id}>\n```{user_list}```",
+        "discord_notification_success": "Message envoyé avec succès sur Discord !",
+        "discord_notification_error": "Erreur lors de l'envoi du message sur Discord."
+    }
+}
