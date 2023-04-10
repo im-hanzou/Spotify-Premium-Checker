@@ -33,6 +33,7 @@ options.add_argument("--headless")
 options.add_argument("--log-level=3")
 
 non_premium_users = []
+error_users = []
 
 with open("logins.txt", "r") as f:
     for line in f:
@@ -42,7 +43,7 @@ with open("logins.txt", "r") as f:
         driver = webdriver.Chrome(service=service, options=options)
         driver.get("https://accounts.spotify.com/login?continue=https%3A%2F%2Fspotify.com%2Faccount%2Foverview")
 
-        wait = WebDriverWait(driver, 10)
+        wait = WebDriverWait(driver, 2)
 
         username_field = driver.find_element(By.ID, "login-username")
         username_field.send_keys(username)
@@ -53,28 +54,40 @@ with open("logins.txt", "r") as f:
         login_button = driver.find_element(By.ID, "login-button")
         login_button.click()
 
-        wait.until(EC.presence_of_element_located((By.ID, "your-plan")))
-
-        if "Spotify Free" in driver.find_element(By.XPATH, "//body").text:
-            non_premium_users.append(username)
-            print(messages["user_not_premium"].format(username=username))
-        else:
-            print(messages["user_is_premium"].format(username=username))
+        try:
+            wait.until(EC.presence_of_element_located((By.ID, "your-plan")))
+            if "Spotify Free" in driver.find_element(By.XPATH, "//body").text:
+                non_premium_users.append(username)
+                print(messages["user_not_premium"].format(username=username))
+            else:
+                print(messages["user_is_premium"].format(username=username))
+        except:
+            print(messages["login_error"].format(username=username))
+            error_users.append(username)
+            continue
 
         driver.delete_all_cookies()
-
         driver.quit()
 
 user_list = "\n".join(non_premium_users)
+error_user_list = "\n".join(error_users)
 
-if user_list:
-    headers = {"Content-Type": "application/json"}
-    payload = {
-        "content": f"<@{discord_id}>\n```{user_list}```"
-    }
-    response = requests.post(webhook_url, headers=headers, data=json.dumps(payload))
-    
-    if response.status_code == 204:
-        print(messages["discord_notification_success"])
-    else:
-        print(messages["discord_notification_error"])
+if user_list or error_user_list:
+    payload = {"content": f"<@{discord_id}>"}
+    if user_list:
+        payload["content"] += f"\n-{messages['users_lost_premium']}```\n{user_list}```"
+    if error_user_list:
+        payload["content"] += f"\n-{messages['users_in_error']}```\n{error_user_list}```"
+
+else:
+    payload = {"content": f"{messages['all_users_premium']}"}
+
+
+headers = {"Content-Type": "application/json"}
+
+response = requests.post(webhook_url, headers=headers, data=json.dumps(payload))
+
+if response.status_code == 204:
+    print(messages["discord_notification_success"])
+else:
+    print(messages["discord_notification_error"])
