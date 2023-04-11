@@ -43,7 +43,7 @@ with open("logins.txt", "r") as f:
         driver = webdriver.Chrome(service=service, options=options)
         driver.get("https://accounts.spotify.com/login?continue=https%3A%2F%2Fspotify.com%2Faccount%2Foverview")
 
-        wait = WebDriverWait(driver, 2)
+        wait = WebDriverWait(driver, 5)
 
         username_field = driver.find_element(By.ID, "login-username")
         username_field.send_keys(username)
